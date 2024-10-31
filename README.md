@@ -1,16 +1,10 @@
 
 ---
 
-# Applications, Tokens and Neo4j Query API
+# Applications, Tokens and Neo4j Python Driver
 
-Using tokens with Applications and Neo4j Query API for auth
+Using tokens for auth with Neo4j Python Driver 
 ================================================
-
-In a previous blog post I discussed a web application obtaining and using a token with Neo4j Query API as a result of a user successfully authenticating.  This entry looks at what would be involved for an application to obtain a token and use it with Neo4j Query API.  
-
-**Plot spoiler** - it's very similar.
-
-Many organisations prefer a token based approach, one reason for this is the limited lifespan and scope of token which helps to reduce risk if it is intercepted.  Lets look at how this can be achieved.
 
 We will need
 
@@ -194,14 +188,14 @@ docker restart neo4jDb
 
 * * *
 
-Getting a token from Okta to use with Neo4j Query API
+Getting a token from Okta
 -----------------------------------------
 
-A token to use with the Query API is obtained from **https://YOUR_DEVELOPER_ACCOUNT_DOMAIN/oauth2/default/v1/token**  as illustrated with this example using CURL
+A token to use with the Query API is obtained from **YOUR_ISSUER_URI_FROM_OKTA/v1/token**  as illustrated with this example using CURL
 
 Replace
 
-* YOUR_DEVELOPER_ACCOUNT_DOMAIN
+* YOUR_ISSUER_URI_FROM_OKTA
 
 * YOUR_SCOPE_FROM_OKTA
 
@@ -214,7 +208,7 @@ with values from the Okta configuration
 ```Bash
 curl --request POST \
 
---url https://YOUR_DEVELOPER_ACCOUNT_DOMAIN/oauth2/default/v1/token \
+--url YOUR_ISSUER_URI_FROM_OKTA/v1/token \
 --header 'accept: application/json' \
 --header 'cache-control: no-cache' \
 --header 'content-type: application/x-www-form-urlencoded' \
@@ -232,36 +226,33 @@ This should result in a response that looks similar to this
 "scope": "neo4jDba"
 }
 ```
-  
-From this we use the value of the access_token key to use with the Query API.
-
-* * *
-
-Using a token with the Query API
---------------------------------
-
-Replace
-
-* YOUR_ACCESS_TOKEN
-
-with the value obtained from Okta
-
-```Bash
-
-curl -X POST <http://localhost:7474/db/neo4j/query/v2> \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
--H "Content-Type: application/json" \
--d '{"statement": "MATCH (n) RETURN n LIMIT 1"}'
-```
-
-A response with a single entry from your Neo4j graph will be returned
 
 * * *
 
 ## The Python application
 
-Needs the request module to be installed before this can be used.  Replace YOUR_ with values for your setup.
+Create a .env file with this content.  Replace with your values
 
-```python querytoken/querytoken.py```
+This file needs to be in the same folder as the main Python filae, querytoken.py
 
-# neo4j_python_driver_and_token
+```Text
+OKTA_CLIENT_ID = "YOUR_CLIENT_ID_FROM_OKTA"
+OKTA_CLIENT_SECRET = "YOUR_CLIENT_SECRET_ID_FROM_OKTA"
+OKTA_TOKEN_URI = "YOUR_ISSUER_URI_FROM_OKTA/v1/token"
+OKTA_SCOPE = "YOUR_SCOPE_FROM_OKTA"
+NEO4J_URI = "YOUR_NEO4J_URI:7687"
+
+```
+
+Install  the requirements
+
+```Bash
+pip install -r requirements.txt
+```
+
+
+Run the Python app
+```Bash
+python querytoken.py
+```
+
