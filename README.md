@@ -127,6 +127,21 @@ Select **Create**
 
 The newly created scope will now be shown in the table.  Make a note of the **Issuer URI**
 
+
+### Access Policies
+You will need to allow access by clients to new authorization server.   Missing this step will result in access denied messages when trying to obtain a token.  
+Creating an **Access Policy**
+Select **Access Policies** -> **Add New Access Policy**
+**Name**: Enter a name
+**Description**: Enter a description
+**Assign To**:  All Clients
+
+When access policy is created and shown, within the policy select **Add Rule**
+Enter a name for the rule.  The default settings will be fine and do not need to be changed for our purposes but should be carefully considered for production use. 
+Select **Create Rule** to create the rule
+
+
+
 Takeways from Okta configuration work
 --------
 
